@@ -1,0 +1,7 @@
+*.sw*
+.coverage
+.pytest_cache
+*__pycache__
+venv/
+.env
+logs
