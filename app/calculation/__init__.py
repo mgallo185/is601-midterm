@@ -20,7 +20,7 @@ This code demonstrates effective use of object-oriented and functional programmi
 '''
 
 # Import necessary modules and classes
-from app.calculation.calculations import Calculations  # Manages history of calculations
+from app.calculation.history import History  # Manages history of calculations
 from app.operations.operations import add, subtract, multiply, divide  # Arithmetic operations
 from app.calculation.calculation import Calculation  # Represents a single calculation
 from decimal import Decimal  # For high-precision arithmetic
@@ -34,7 +34,7 @@ class Calculator:
         # Create a Calculation object using the static create method, passing in operands and the operation
         calculation = Calculation.create(a, b, operation)
         # Add the calculation to the history managed by the Calculations class
-        Calculations.add_calculation(calculation)
+        History.add_calculation(calculation)
         # Perform the calculation and return the result
         return calculation.perform()
 

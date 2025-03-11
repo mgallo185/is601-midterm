@@ -8,7 +8,7 @@ import pytest
 # Import Calculation and Calculations classes from the calculator package,
 # assuming these are the correct paths following Python's package and module naming conventions.
 from app.calculation.calculation import Calculation
-from app.calculation.calculations import Calculations
+from app.calculation.history import History
 
 # Import arithmetic operation functions (add and subtract) to be tested.
 from app.operations.operations import add, subtract
@@ -20,27 +20,27 @@ from app.operations.operations import add, subtract
 def setup_calculations():
     """Clear history and add sample calculations for tests."""
     # Clear any existing calculation history to ensure a clean state for each test.
-    Calculations.clear_history()
+    History.clear_history()
     # Add sample calculations to the history to set up a known state for testing.
     # These calculations represent typical use cases and allow tests to verify that
     # the history functionality is working as expected.
-    Calculations.add_calculation(Calculation(Decimal('10'), Decimal('5'), add))
-    Calculations.add_calculation(Calculation(Decimal('20'), Decimal('3'), subtract))
+    History.add_calculation(Calculation(Decimal('10'), Decimal('5'), add))
+    History.add_calculation(Calculation(Decimal('20'), Decimal('3'), subtract))
 
 def test_add_calculation(setup_calculations):
     """Test adding a calculation to the history."""
     # Create a new Calculation object to add to the history.
     calc = Calculation(Decimal('2'), Decimal('2'), add)
     # Add the calculation to the history.
-    Calculations.add_calculation(calc)
+    History.add_calculation(calc)
     # Assert that the calculation was added to the history by checking
     # if the latest calculation in the history matches the one we added.
-    assert Calculations.get_latest() == calc, "Failed to add the calculation to the history"
+    assert History.get_latest() == calc, "Failed to add the calculation to the history"
 
 def test_get_history(setup_calculations):
     """Test retrieving the entire calculation history."""
     # Retrieve the calculation history.
-    history = Calculations.get_history()
+    history = History.get_history()
     # Assert that the history contains exactly 2 calculations,
     # which matches our setup in the setup_calculations fixture.
     assert len(history) == 2, "History does not contain the expected number of calculations"
@@ -48,14 +48,14 @@ def test_get_history(setup_calculations):
 def test_clear_history(setup_calculations):
     """Test clearing the entire calculation history."""
     # Clear the calculation history.
-    Calculations.clear_history()
+    History.clear_history()
     # Assert that the history is empty by checking its length.
-    assert len(Calculations.get_history()) == 0, "History was not cleared"
+    assert len(History.get_history()) == 0, "History was not cleared"
 
 def test_get_latest(setup_calculations):
     """Test getting the latest calculation from the history."""
     # Retrieve the latest calculation from the history.
-    latest = Calculations.get_latest()
+    latest = History.get_latest()
     # Assert that the latest calculation matches the expected values,
     # specifically the operands and operation used in the last added calculation
     # in the setup_calculations fixture.
@@ -64,17 +64,17 @@ def test_get_latest(setup_calculations):
 def test_find_by_operation(setup_calculations):
     """Test finding calculations in the history by operation type."""
     # Find all calculations with the 'add' operation.
-    add_operations = Calculations.find_by_operation("add")
+    add_operations = History.find_by_operation("add")
     # Assert that exactly one calculation with the 'add' operation was found.
     assert len(add_operations) == 1, "Did not find the correct number of calculations with add operation"
     # Find all calculations with the 'subtract' operation.
-    subtract_operations = Calculations.find_by_operation("subtract")
+    subtract_operations = History.find_by_operation("subtract")
     # Assert that exactly one calculation with the 'subtract' operation was found.
     assert len(subtract_operations) == 1, "Did not find the correct number of calculations with subtract operation"
 
 def test_get_latest_with_empty_history():
     """Test getting the latest calculation when the history is empty."""
     # Ensure the history is empty by clearing it.
-    Calculations.clear_history()
+    History.clear_history()
     # Assert that the latest calculation is None since the history is empty.
-    assert Calculations.get_latest() is None, "Expected None for latest calculation with empty history"
+    assert History.get_latest() is None, "Expected None for latest calculation with empty history"
