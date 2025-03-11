@@ -168,7 +168,7 @@ def test_load_from_csv():
          patch.object(History, 'add_calculation') as mock_add:
 
         result = History.load_from_csv()
- 
+
         mock_clear.assert_called_once()
         assert mock_add.call_count == 2, "Should add both calculations from the CSV"
         assert result is True, "Should return True when load is successful"
