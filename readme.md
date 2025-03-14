@@ -194,7 +194,7 @@ if not os.path.exists(plugin_path):
 ```
 
 
-2. It is also used in (app/plugins/history_command.py](app/plugins/history_command.py)
+2. It is also used in [app/plugins/history_command.py](app/plugins/history_command.py)
 
 ```python
 if not args or len(args) == 0:
