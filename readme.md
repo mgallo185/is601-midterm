@@ -50,8 +50,13 @@ pip install -r requirements.txt
   python main.py
   ```
 
+## Design Patterns
+
 ## Logging
 
+## Exception Handling
+
+## Enviroment Variables
 
 ## Testing
 
