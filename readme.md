@@ -107,7 +107,7 @@ Here is a screenshot of logging in action when the application is running where 
 <img width="503" alt="image" src="https://github.com/user-attachments/assets/b78ed50d-fb43-4105-8119-328626e0a866" />
 
 ### Log Storage
-Logs are stored in the directory [logs/] where it gets created automatically if it does not exist. It can be specfied via the enviroment variables. This directory is excluded on the Github repo.
+Logs are stored in the directory `` logs/ `` where it gets created automatically if it does not exist. It can be specfied via the enviroment variables. This directory is excluded on the Github repo.
 
 
 
