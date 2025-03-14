@@ -4,15 +4,16 @@ from app.calculation.calculation import Calculation
 import pandas as pd
 import os
 import logging
+from dotenv import load_dotenv
 from datetime import datetime
 
 class History:
     # In-memory storage for calculations
     history: List[Calculation] = []
     
-    # File path configuration
-    data_dir = './data'
-    default_filename = 'calculation_history.csv'
+    # File path configuration from environment variables
+    data_dir = os.getenv('DATA_STORAGE_PATH', './data')  # Default to './data' if not set
+    default_filename = os.getenv('DEFAULT_FILENAME', 'calculation_history.csv')  # Default filename
     
     @classmethod
     def add_calculation(cls, calculation: Calculation):
@@ -31,7 +32,7 @@ class History:
         count = len(cls.history)
         cls.history.clear()
         logging.info(f"Cleared history ({count} calculations)")
-    
+
     @classmethod
     def get_latest(cls) -> Calculation:
         """Get the latest calculation. Returns None if there's no history."""
