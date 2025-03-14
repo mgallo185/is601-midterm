@@ -113,6 +113,132 @@ Logs are stored in the directory `` logs/ `` where it gets created automatically
 
 ## Exception Handling
 
+### EAFP (Easier to Ask for Forgiveness than Permission)
+I used EAFP approach slightly more. In my plugins involving the math operation commands, I used the EAFP approach to attempt the operation first and then catch and handle any execeptions that occur. One of these instances are in [/app/plugins/add_command.py](app/plugins/add_command.py)
+```python
+try:
+    num1, num2 = map(Decimal, args)
+    result = Calculator.add(num1, num2)
+    logger.info(f"Add command executed with numbers: {num1} and {num2}, result: {result}")
+    print(f"Result: {num1} + {num2} = {result}")
+except InvalidOperation:
+    logger.error("Invalid input, failed to convert input to Decimal")
+    print("Invalid input. Please enter valid numbers.")
+except Exception as e:
+    logger.exception(f"Error during addition: {e}")
+    print(f"Error: {e}")
+```
+
+It is also used in [/app/__init__.py](app/__init__.py) in the `` load_plugins() `` 
+```python
+try:
+    plugin_module = importlib.import_module(f"{plugins_package}.{plugin_name}")
+    # ... code that might fail
+except ImportError as ie:
+    failed_plugins += 1
+    logger.error(f"Failed to load plugin {plugin_name}: {ie}")
+```
+
+Additionally, in the [app/calculation/history.py](app/calculation/history.py) in the `` load_from_csv() `` method
+```python
+try:
+            # Load data from CSV
+            df = pd.read_csv(file_path)
+            logging.info(f"Read {len(df)} records from '{file_path}'")
+            
+            # Clear current history before loading
+            cls.clear_history()
+            
+            # Import necessary operations for reconstruction
+            from app.operations.operations import add, subtract, multiply, divide
+            
+            # Map operation names to actual functions
+            operation_map = {
+                'add': add,
+                'subtract': subtract,
+                'multiply': multiply,
+                'divide': divide
+            }
+            
+            # Reconstruct Calculation objects
+            loaded_count = 0
+            for _, row in df.iterrows():
+                operation_name = row['Operation']
+                if operation_name in operation_map:
+                    a = Decimal(row['First Operand'])
+                    b = Decimal(row['Second Operand'])
+                    operation = operation_map[operation_name]
+                    
+                    # Create and add calculation to history
+                    calc = Calculation.create(a, b, operation)
+                    cls.add_calculation(calc)
+                    loaded_count += 1
+            
+            logging.info(f"Successfully loaded {loaded_count} calculations")
+            return True
+        except Exception as e:
+            logging.error(f"Error loading history: {e}")
+            return False
+
+```
+
+### LBYL (Look Before you Leap)
+The Look Before You Leap method checks conditions before attempting an operation
+
+1. In [app/__init__.py](app/__init__.py)
+
+```python
+if not os.path.exists(plugin_path):
+    logger.warning(f"Plugin directory {plugin_path} does not exist")
+    return
+```
+
+
+2. It is also used in (app/plugins/history_command.py](app/plugins/history_command.py)
+
+```python
+if not args or len(args) == 0:
+    # Default behavior: display history
+    self._display_history()
+    return
+```
+3. Additionally, in the [app/calculation/history.py](app/calculation/history.py)
+```python
+if not os.path.exists(file_path):
+    logging.error(f"File not found: '{file_path}'")
+    return False
+
+```
+
+### Combination of both
+
+1. This [app/plugins/history_command.py](app/plugins/history_command.py) uses both here in the delete_history method:
+
+```python
+# LBYL: Check if an index was provided first
+if not args or len(args) == 0:
+    logger.error("No index provided for deletion")
+    print("Error: Please provide an index to delete (e.g., 'delete 2')")
+    return
+    
+try:
+    # EAFP: Try to convert and use the index
+    index = int(args[0])
+    
+    # Another LBYL check inside the try block
+    if History.remove_at_index(index):
+        logger.info(f"Successfully deleted calculation at index {index}")
+        print(f"Deleted calculation at index {index}")
+    else:
+        logger.error(f"Failed to delete calculation at index {index}")
+        print(f"Error: Could not delete calculation at index {index}")
+except ValueError:
+    logger.error(f"Invalid index format: {args[0]}")
+    print(f"Error: '{args[0]}' is not a valid index. Please provide a number.")
+```
+
+
+
 ## Testing
 
 This project uses **Pytest** for unit testing, **Pylint** for code quality checks, and **Coverage.py** to measure test coverage. Below are the key commands to run tests and analyze coverage.
