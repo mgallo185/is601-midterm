@@ -50,6 +50,9 @@ pip install -r requirements.txt
   python main.py
   ```
 
+## Logging
+
+
 ## Testing
 
 This project uses **Pytest** for unit testing, **Pylint** for code quality checks, and **Coverage.py** to measure test coverage. Below are the key commands to run tests and analyze coverage.
