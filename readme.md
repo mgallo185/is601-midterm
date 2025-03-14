@@ -52,6 +52,35 @@ pip install -r requirements.txt
 
 ## Design Patterns
 
+### Command Pattern
+This encapsulates a request as an object, allowing parameterization of clients with different requests
+
+Implementation:  Used in [app/commands/__init__.py](app/commands/__init__.py) defines the abstract Command class and CommandHandler. Concrete command implementations are in the [app/plugins](app/plugins) directory, with each command (like AddCommand) implementing the execute() method. 
+
+### Factory Method Pattern
+Creates objects without specifying the exact class of that object
+
+Implementation: [app/calculation/calculation.py](app/calculation/calculation.py) contains the Calculation.create() static method that acts as a factory method for creating Calculation objects.
+
+### Strategy Pattern
+This defines a collection of algorithms where it encapsulates each one, which makes them interchangeable at runtime
+
+Implementation: [app/operations/operations.py](app/operations/operations.py) contains the different calculation strategies (add, subtract, multiply, divide) that are passed as callable parameters to the Calculator methods.
+
+### Plugin Pattern
+Allows for dynamic loading of modules and extending app functionality
+
+Implementation: [app/__init__.py](app/__init__.py) includes the load_plugins() method that dynamically discovers and loads command plugins from the [app/plugins](app/plugins) directory.
+
+### Singleton Pattern
+Ensures a class has only one instance with a global point of access.
+Implementation: [app/calculation/history.py](app/calculation/history.py) uses class variables and class methods to maintain a single history instance across the application.
+
+### Facade Pattern
+Provides a simplified interface to a complex subsystem.
+
+Implementation: [app/calculation/history.py](app/calculation/history.py) offers simplified methods like save_to_csv(), load_from_csv(), and get_history_as_dataframe() that hide the complexity of Pandas data manipulations and file operations behind a clean, easy-to-use interface.
+
 ## Logging and Environment Variables
 This app uses a logging system to track application behavior and user interactions.
 
