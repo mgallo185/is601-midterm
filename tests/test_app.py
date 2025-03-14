@@ -1,12 +1,11 @@
 """Test suite for the App class."""
-import importlib
 import logging
 import os
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 import pytest
 
 from app import App
-
+from app.commands import Command
 
 @pytest.fixture
 def setup_env_vars():
@@ -52,6 +51,7 @@ def test_app_default_initialization():
                 assert app.environment == 'PRODUCTION'
                 assert app.command_history_size == 100
 
+
 def test_app_start_exit_command(monkeypatch):
     """Test that the REPL exits correctly on 'exit' command."""
     # Simulate user entering 'exit' to end the loop
@@ -80,28 +80,45 @@ def test_app_start_unknown_command(capfd, monkeypatch):
     captured = capfd.readouterr()
     assert "No such command: unknown_command" in captured.out
 
-
 def test_plugin_load_success_and_failure(caplog, monkeypatch):
     """Test both successful and failed plugin loading."""
-    # Set up logging to capture ERROR level logs
-    caplog.set_level(logging.ERROR)
+    # Set up logging to capture logs - redirect root logger to caplog
+    monkeypatch.setattr('app.configure_logging', lambda: None)  # Disable app's logging configuration
+    logging.basicConfig(level=logging.INFO)  # Set up basic logging for pytest to capture
+
+    # Create a mock CommandHandler
+    mock_command_handler = MagicMock()
+
+    # Create a mock Command class
+    mock_command_class = MagicMock(spec=Command)
+
+    # Create a mock module with a Command subclass
+    mock_module = MagicMock()
+    mock_module.__name__ = "working_plugin"
+    # Add the mock command class to the module's attributes
+    mock_module.SomeCommand = mock_command_class
 
     def mock_import_module(name):
         """Mock import_module to handle both success and failure cases."""
         if 'broken_plugin' in name:
             raise ImportError("Mock import error")
-        return importlib.__import__('builtins')  # Return a real module for success case
+        return mock_module
 
-    # Mock pkgutil.iter_modules to return both a working and broken plugin
-    monkeypatch.setattr('pkgutil.iter_modules',
-                       lambda _: [('', 'working_plugin', ''), ('', 'broken_plugin', '')])
-    # Mock importlib.import_module
-    monkeypatch.setattr('importlib.import_module', mock_import_module)
-    # Create app instance which will trigger plugin loading
-    _ = App()
+    # Mock iter_modules to return both a working and broken plugin
+    with patch('pkgutil.iter_modules', return_value=[('', 'working_plugin', ''), ('', 'broken_plugin', '')]):
+        # Mock importlib.import_module
+        with patch('importlib.import_module', side_effect=mock_import_module):
+            # Mock CommandHandler to avoid its initialization
+            with patch('app.commands.CommandHandler', return_value=mock_command_handler):
+                # Mock issubclass to always return True for our mock command class
+                with patch('inspect.issubclass', return_value=True):
+                    # Create app instance which will trigger plugin loading
+                    _ = App()
 
-# Check that the error was logged
-    assert "Failed to load plugin broken_plugin" in caplog.text
+    # Check logs in stderr instead of caplog.text
+    stderr_logs = caplog.text
+    assert "Failed to load plugin broken_plugin" in stderr_logs or "Failed to load plugin broken_plugin" in caplog.records
+    assert "Attempting to load plugin: working_plugin" in stderr_logs or "Attempting to load plugin: working_plugin" in caplog.records
 
 def test_app_command_with_args(capfd, monkeypatch):
     """Test executing a command with arguments."""
@@ -114,6 +131,7 @@ def test_app_command_with_args(capfd, monkeypatch):
     # Catch the SystemExit to test the exit behavior
     with pytest.raises(SystemExit):
         app.start()
+
 
 def test_app_command_execution_error(capfd, monkeypatch):
     """Test how the REPL handles a command execution error."""
@@ -134,6 +152,7 @@ def test_app_command_execution_error(capfd, monkeypatch):
     captured = capfd.readouterr()
     assert "An error occurred" in captured.out
 
+
 def test_app_keyboard_interrupt(capfd, monkeypatch):
     """Test how the REPL handles a keyboard interrupt (Ctrl+C)."""
     # Simulate user pressing Ctrl+C, then entering 'exit'
@@ -151,6 +170,7 @@ def test_app_keyboard_interrupt(capfd, monkeypatch):
     captured = capfd.readouterr()
     assert "Interrupted" in captured.out
 
+
 def test_app_eof_error(capfd, monkeypatch):
     """Test how the REPL handles an EOFError (Ctrl+D)."""
     # Simulate user pressing Ctrl+D
@@ -165,6 +185,7 @@ def test_app_eof_error(capfd, monkeypatch):
     # Check the EOF was handled
     captured = capfd.readouterr()
     assert "Exiting" in captured.out
+
 
 def test_app_unexpected_error(capfd, monkeypatch):
     """Test how the REPL handles an unexpected error."""
@@ -183,6 +204,7 @@ def test_app_unexpected_error(capfd, monkeypatch):
     captured = capfd.readouterr()
     assert "An unexpected error occurred" in captured.out
 
+
 def test_empty_input_handling(capfd, monkeypatch):
     """Test how the REPL handles empty input."""
     # Simulate user entering empty string, then exit
@@ -197,4 +219,3 @@ def test_empty_input_handling(capfd, monkeypatch):
 
     # Verify command handler wasn't called for empty input
     assert app.command_handler.execute_command.call_count == 1  # Only for menu at startup
-
