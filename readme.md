@@ -27,14 +27,14 @@ Ensure you have the following installed before proceeding:
 ### Setting Up the Program
 
 1. **In your terminal Clone the repository**  
-   ```sh
+```sh
    git clone https://github.com/mgallo185/is601-midterm.git
    cd is601-midterm
-
+```
 2. **Open the project in VS Code**
-   ```sh
+```sh
    code .
-
+```
 3. **Create and activate a virtual environment**
 ```sh
   python3 -m venv venv
@@ -46,7 +46,7 @@ Ensure you have the following installed before proceeding:
 pip install -r requirements.txt
 ```
 ### Running the Calculator Program
-- ```sh
+```sh
   python main.py
   ```
 
