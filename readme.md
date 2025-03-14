@@ -10,7 +10,7 @@ This midterm requires the development of an advanced Python-based calculator app
 1. [Installation and Usage](#installation-and-usage)
 2. [Design Patterns](#design-patterns)
 3. [Logging and Environment Variables](#logging-and-environment-variables)
-4. [Exception Handling](#exception)
+4. [Exception Handling](#exception-handling)
 
 6. [Testing](#testing)
 
