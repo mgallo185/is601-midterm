@@ -54,17 +54,17 @@ When ran, the user should be welcomed by the menu displaying all of the possible
 <img width="545" alt="image" src="https://github.com/user-attachments/assets/5af4cf2c-6da5-4999-851a-48e926db7894" />
 
 ### Summary of each command
-- add [number] [number] This adds numbers
-- subtract [num] [num]: This subtracts numbers
-- multiply [num] [num]: This multiplies numbers
-- divide [num] [num]: This divides numbers
-- history show: This displays history
-- history clear: This clears all history
-- history save: This saves history to .csv file
-- history load: This loads history from .csv file
-- history delete <index>: This deletes a specific calcualtion at the specfied index
-- history filter <operation> This filters history by operation
-- history analyze: This shows history stats
+- add [number] [number] adds numbers
+- subtract [num] [num]:  subtracts numbers
+- multiply [num] [num]:  multiplies numbers
+- divide [num] [num]: divides numbers
+- history show: displays history
+- history clear: clears all history
+- history save: saves history to .csv file
+- history load: loads history from .csv file
+- history delete <index>: deletes a specific calcualtion at the specfied index
+- history filter <operation> filters history by operation
+- history analyze: shows history stats
 ### Demo Video
 https://github.com/mgallo185/is601-midterm/blob/main/MidtermDemoIS601.mp4
 
