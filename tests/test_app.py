@@ -219,3 +219,27 @@ def test_empty_input_handling(capfd, monkeypatch):
 
     # Verify command handler wasn't called for empty input
     assert app.command_handler.execute_command.call_count == 1  # Only for menu at startup
+
+def test_menu_display_error(capfd, monkeypatch):
+    """Test fallback message when menu display fails at startup."""
+    # Mock command_handler.execute_command to raise an exception for the menu command
+    mock_command_handler = MagicMock()
+    mock_command_handler.execute_command.side_effect = Exception("Menu display error")
+
+    # Simulate user entering 'exit' to end the loop
+    monkeypatch.setattr('builtins.input', lambda _: 'exit')
+
+    # Create the app and replace its command handler with our mock
+    with patch('app.CommandHandler', return_value=mock_command_handler):
+        app = App()
+
+        # Use pytest's monkeypatch to avoid running the REPL in an infinite loop
+        with pytest.raises(SystemExit):
+            app.start()
+
+    # Check the captured output for the fallback message
+    captured = capfd.readouterr()
+    assert "Type 'help' or 'menu' to see available commands" in captured.out
+
+    # Verify the command handler tried to execute the menu command
+    mock_command_handler.execute_command.assert_called_with("menu")
