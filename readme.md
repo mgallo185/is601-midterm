@@ -89,7 +89,7 @@ Provides a simplified interface to a complex subsystem.
 Implementation: [app/calculation/history.py](app/calculation/history.py) offers simplified methods like save_to_csv(), load_from_csv(), and get_history_as_dataframe() that hide the complexity of Pandas data manipulations and file operations behind a clean, easy-to-use interface.
 
 ## Logging and Environment Variables
-This app uses a logging system to track application behavior and user interactions.
+This app uses a logging system to track application behavior and user interactions. Uses different log messages based such as INFO, WARNING, ERROR for good monitoring. It has detailed logs based on errors, operations, data manipulation, etc.
 
 ### Logging Configuration
 1. The logging system is configured with the [logging.conf](logging.conf) file which defines loggers, handlers, and formatters in the standard Python format. This is shown here:
@@ -134,7 +134,7 @@ It is loaded at the start of the application like the following:
       load_dotenv()
 ```
 
-It uses the defined envrioment variables specfied or it will fall back to default variables if needed.
+It uses the defined envrioment variables specfied or it will fall back to default variables if needed. Some of these variales APP_NAME, DEFAULT_FILENAME, DEBUG_MODE
 
 Logging is also supported in the configuration in the configure_logging() function in [app/__init__.py](app/__init__.py) file where it uses enviroment variables such as LOG_DIR, LOG_LEVEL, LOG_FORMAT, LOG_FILE where these are all specified in a .env file that is not tracked on Github.
 
@@ -285,6 +285,10 @@ To execute all tests, including Pylint and code coverage checks, run:
 ```sh
 pytest --pylint --cov
 ```
+<img width="489" alt="image" src="https://github.com/user-attachments/assets/22f32672-9351-489a-93c7-e2ac6fc6facc" />
+
+I acheieved 99% test coverage where the only lines that were troublesome to test where testing the plugin setup with enviroment variables.
+
 ### Running Test with Custom Number of Records
 To run tests with a custom numbe of records:
 ```sh
@@ -305,3 +309,5 @@ To check test coverage for the [app/](app/) module and display missing lines:
 pytest --cov=app --cov-report=term-missing
 
 ```
+<img width="516" alt="image" src="https://github.com/user-attachments/assets/29f798cd-4b13-4210-9668-2c74a4737039" />
+
