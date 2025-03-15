@@ -68,6 +68,8 @@ When ran, the user should be welcomed by the menu displaying all of the possible
 ### Demo Video
 https://github.com/mgallo185/is601-midterm/blob/main/MidtermDemoIS601.mp4
 
+If video is too big to watch on Github download the mp4 file please!
+
 ## Design Patterns
 
 ### Command Pattern
