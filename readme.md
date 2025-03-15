@@ -13,8 +13,7 @@ The user can also manage their calculation history where it can display their pr
 2. [Design Patterns](#design-patterns)
 3. [Logging and Environment Variables](#logging-and-environment-variables)
 4. [Exception Handling](#exception-handling)
-
-6. [Testing](#testing)
+5. [Testing](#testing)
 
 
 ## Installation and Usage
