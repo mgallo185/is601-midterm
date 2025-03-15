@@ -61,12 +61,16 @@ class HistoryCommand(Command):
         """Clear the calculation history."""
         history_size = len(History.get_history())
         History.clear_history()
-        
+    
         # Save the empty history to update the CSV file
-        History.save_to_csv()
-        
+        success = History.save_to_csv()
+    
         logger.info(f"Cleared {history_size} calculations from history")
-        print("History cleared and saved file updated.")
+    
+        if success:
+            print("History cleared and saved file updated.")
+        else:
+            print("History cleared in memory, but there was an issue updating the file.")
     
     def _save_history(self, *args):
         """Save the calculation history to a CSV file."""
