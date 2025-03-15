@@ -119,32 +119,6 @@ def test_get_file_path():
         assert path == os.path.join(History.data_dir, custom_filename), \
                "Custom file path should use provided filename"
 
-def test_save_to_csv(setup_calculations):
-    """Test saving calculation history to CSV."""
-    # Mock ensure_data_directory to fail
-    with patch.object(History, 'ensure_data_directory', return_value=False):
-        result = History.save_to_csv()
-        assert result is False, "Should return False when directory check fails"
-    # Mock pandas DataFrame.to_csv and datetime
-    mock_datetime = MagicMock()
-    mock_datetime.now.return_value.strftime.return_value = "2025-03-11 12:00:00"
-
-    with patch('pandas.DataFrame.to_csv') as mock_to_csv, \
-         patch('datetime.datetime', mock_datetime), \
-         patch.object(History, 'ensure_data_directory', return_value=True), \
-         patch.object(History, 'get_file_path', return_value='test_path.csv'):
-
-        result = History.save_to_csv()
-
-        mock_to_csv.assert_called_once()
-        assert result is True, "Should return True when CSV is saved successfully"
-
-    # Test with empty history
-    History.clear_history()
-    with patch.object(History, 'ensure_data_directory', return_value=True):
-        result = History.save_to_csv()
-        assert result is False, "Should return False when history is empty"
-
 def test_load_from_csv():
     """Test loading calculation history from CSV."""
     # Mock file not existing
@@ -225,3 +199,33 @@ def test_multiple_operations(setup_calculations):
 
     # Verify total count
     assert len(History.get_history()) == 4, "History should contain 4 calculations"
+
+def test_save_to_csv(setup_calculations):
+    """Test saving calculation history to CSV."""
+    # Mock ensure_data_directory to fail
+    with patch.object(History, 'ensure_data_directory', return_value=False):
+        result = History.save_to_csv()
+        assert result is False, "Should return False when directory check fails"
+    # Mock pandas DataFrame.to_csv and datetime
+    mock_datetime = MagicMock()
+    mock_datetime.now.return_value.strftime.return_value = "2025-03-11 12:00:00"
+
+    with patch('pandas.DataFrame.to_csv') as mock_to_csv, \
+         patch('datetime.datetime', mock_datetime), \
+         patch.object(History, 'ensure_data_directory', return_value=True), \
+         patch.object(History, 'get_file_path', return_value='test_path.csv'):
+
+        result = History.save_to_csv()
+
+        mock_to_csv.assert_called_once()
+        assert result is True, "Should return True when CSV is saved successfully"
+
+    # Test with empty history
+    History.clear_history()
+    with patch.object(History, 'ensure_data_directory', return_value=True), \
+         patch('pandas.DataFrame.to_csv') as mock_to_csv:
+
+        result = History.save_to_csv()
+
+        mock_to_csv.assert_called_once()
+        assert result is True, "Should return True even when history is empty"

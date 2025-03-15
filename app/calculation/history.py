@@ -73,35 +73,36 @@ class History:
         return relative_path
     
     @classmethod
+   
     def save_to_csv(cls, filename=None):
         """Save calculation history to a CSV file."""
         if not cls.ensure_data_directory():
             return False
-            
-        file_path = cls.get_file_path(filename)
         
-        # Convert calculation objects to a format pandas can handle
+        file_path = cls.get_file_path(filename)
+    
+    # Convert calculation objects to a format pandas can handle
         history_data = []
         for calc in cls.history:
-            # Extract the data we want to save
+        # Extract the data we want to save
             history_data.append({
-                'Timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'First Operand': str(calc.a),
-                'Second Operand': str(calc.b),
-                'Operation': calc.operation.__name__,
-                'Result': str(calc.perform())
-            })
-        
-        # Create DataFrame and save to CSV
-        if history_data:
-            df = pd.DataFrame(history_data)
-            df.to_csv(file_path, index=False)
-            logging.info(f"Saved {len(history_data)} calculations to '{file_path}'")
-            return True
-        else:
-            logging.warning("No calculations to save")
-            return False
+            'Timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'First Operand': str(calc.a),
+            'Second Operand': str(calc.b),
+            'Operation': calc.operation.__name__,
+            'Result': str(calc.perform())
+        })
     
+    # Create DataFrame and save to CSV, even if empty
+        df = pd.DataFrame(history_data)
+        df.to_csv(file_path, index=False)
+    
+        if history_data:
+            logging.info(f"Saved {len(history_data)} calculations to '{file_path}'")
+        else:
+            logging.info(f"Saved empty history to '{file_path}'")
+    
+        return True
     @classmethod
     def load_from_csv(cls, filename=None):
         """Load calculation history from a CSV file."""

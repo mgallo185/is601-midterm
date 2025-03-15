@@ -49,13 +49,19 @@ class TestHistoryCommand:
             assert "10 multiply 2 = 20" in captured.out
 
     def test_clear_history(self, history_command, capsys):
-        """Test clearing history."""
+        """Test clearing history with successful and failed save."""
+        # Test when both clearing and saving succeed
         with patch('app.calculation.history.History.clear_history') as mock_clear, \
-             patch('app.calculation.history.History.save_to_csv') as mock_save:
+            patch('app.calculation.history.History.save_to_csv', return_value=True):
             captured = self._execute_and_capture(history_command, capsys, "clear")
             mock_clear.assert_called_once()
-            mock_save.assert_called_once()
-            assert "History cleared" in captured.out
+            assert "History cleared and saved file updated." in captured.out
+        # Test when clearing succeeds but saving fails
+        with patch('app.calculation.history.History.clear_history') as mock_clear, \
+            patch('app.calculation.history.History.save_to_csv', return_value=False):
+            captured = self._execute_and_capture(history_command, capsys, "clear")
+            mock_clear.assert_called_once()
+            assert "History cleared in memory, but there was an issue updating the file." in captured.out
 
     @pytest.mark.parametrize("save_return, expected_output", [
         (True, "History saved to"), (False, "No history to save")
