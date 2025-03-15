@@ -125,21 +125,26 @@ class HistoryCommand(Command):
     def _delete_history(self, *args):
         """Delete a specific calculation from history by index."""
         logger.info("Executing delete history command")
-        
+    
         # Check if an index was provided
         if not args or len(args) == 0:
             logger.error("No index provided for deletion")
             print("Error: Please provide an index to delete (e.g., 'delete 2')")
             return
-            
+        
         try:
             # Convert argument to integer index
             index = int(args[0])
-            
+        
             # Attempt to remove the calculation at the specified index
             if History.remove_at_index(index):
-                logger.info(f"Successfully deleted calculation at index {index}")
-                print(f"Deleted calculation at index {index}")
+                # Save the updated history to the CSV file
+                if History.save_to_csv():
+                    logger.info(f"Successfully deleted calculation at index {index} and updated file")
+                    print(f"Deleted calculation at index {index} and updated file")
+                else:
+                    logger.warning(f"Deleted calculation at index {index} but failed to update file")
+                    print(f"Deleted calculation at index {index} but failed to update file")
             else:
                 logger.error(f"Failed to delete calculation at index {index}")
                 print(f"Error: Could not delete calculation at index {index}")

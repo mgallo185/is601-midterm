@@ -111,20 +111,32 @@ class TestHistoryCommand:
 
     def test_delete_history(self, history_command, capsys):
         """Test deleting history entries."""
-        with patch('app.calculation.history.History.remove_at_index', return_value=True):
+        # Test successful deletion with file update
+        with patch('app.calculation.history.History.remove_at_index', return_value=True), \
+            patch('app.calculation.history.History.save_to_csv', return_value=True):
             captured = self._execute_and_capture(history_command, capsys, "delete", "1")
-            assert "Deleted calculation at index 1" in captured.out
+            assert "Deleted calculation at index 1 and updated file" in captured.out
 
+        # Test successful deletion but failed file update
+        with patch('app.calculation.history.History.remove_at_index', return_value=True), \
+            patch('app.calculation.history.History.save_to_csv', return_value=False):
+            captured = self._execute_and_capture(history_command, capsys, "delete", "1")
+            assert "Deleted calculation at index 1 but failed to update file" in captured.out
+
+        # Test missing index
         captured = self._execute_and_capture(history_command, capsys, "delete")
         assert "Error: Please provide an index" in captured.out
 
+        # Test invalid index format
         captured = self._execute_and_capture(history_command, capsys, "delete", "abc")
         assert "is not a valid index" in captured.out
 
+        # Test failed deletion
         with patch('app.calculation.history.History.remove_at_index', return_value=False):
             captured = self._execute_and_capture(history_command, capsys, "delete", "99")
             assert "Error: Could not delete calculation at index" in captured.out
 
+        # Test exception during deletion
         with patch('app.calculation.history.History.remove_at_index', side_effect=Exception("Test delete error")), \
             patch('app.plugins.history_command.logger') as mock_logger:
             captured = self._execute_and_capture(history_command, capsys, "delete", "1")
