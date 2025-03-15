@@ -4,7 +4,9 @@
 
 This midterm requires the development of an advanced Python-based calculator application. Designed to underscore the importance of professional software development practices, the application integrates clean, maintainable code, the application of design patterns, comprehensive logging, dynamic configuration via environment variables, sophisticated data handling with Pandas, and a command-line interface (REPL) for real-time user interaction.
 
+The project does the following arithmetic operations: add, subtract, multiply, and divide. The solution is calculated and errors are handled using the EAFP apporach via try and except statements. 
 
+The user can also manage their calculation history where it can display their previous calculations, save their history, clear their entire history, delete specific calculations, and filter and analyze their history using Pandas.
 ## Table of Contents
 
 1. [Installation and Usage](#installation-and-usage)
@@ -49,6 +51,11 @@ pip install -r requirements.txt
 ```sh
   python main.py
   ```
+When ran, the user should be welcomed by the menu displaying all of the possible commands, they can use:
+<img width="545" alt="image" src="https://github.com/user-attachments/assets/5af4cf2c-6da5-4999-851a-48e926db7894" />
+
+### Demo Video
+https://github.com/mgallo185/is601-midterm/blob/main/MidtermDemoIS601.mp4
 
 ## Design Patterns
 
@@ -143,7 +150,7 @@ Logs are stored in the directory `` logs/ `` where it gets created automatically
 ## Exception Handling
 
 ### EAFP (Easier to Ask for Forgiveness than Permission)
-I used EAFP approach slightly more. In my plugins involving the math operation commands, I used the EAFP approach to attempt the operation first and then catch and handle any execeptions that occur. One of these instances are in [/app/plugins/add_command.py](app/plugins/add_command.py)
+I used EAFP approach slightly more. In my plugins involving the math operation commands, I used the EAFP approach to attempt the operation first and then catch and handle any execeptions that occur. One of these instances are in [/app/plugins/add_command.py](app/plugins/add_command.py) and similar logic is used for subtraction, mulitiplication, and division located in the same directory
 ```python
 try:
     num1, num2 = map(Decimal, args)
